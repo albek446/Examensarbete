@@ -62,7 +62,7 @@ public class EAV_DB implements TestDb{
 
 	@Override
 	public void insert(Patient patient) {
-		insertRow("Patient", patient.id + "", "id", patient.id + "");
+		//insertRow("Patient", patient.id + "", "id", patient.id + "");
 		insertRow("Patient", patient.id + "", "name", patient.name);
 		insertRow("Patient", patient.id + "", "socialSecurityNumber", patient.socialSecurityNumber);
 		insertRow("Patient", patient.id + "", "sex", patient.sex + "");
@@ -86,7 +86,7 @@ public class EAV_DB implements TestDb{
 	private List get(String select, String table, String where, Class c){
 		ResultSet rs = null;
 		try {
-    		String query = String.format(selectQuery + where, select, table);
+    		String query = String.format(selectQuery + where, select, table);    		
             Statement stmt = con.createStatement();
     		rs = stmt.executeQuery(query);
         } catch (SQLException ex) {
@@ -96,44 +96,36 @@ public class EAV_DB implements TestDb{
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private List resultSetToArrayList(ResultSet rs, Class c){
-		ResultSetMetaData md;		
+	private List resultSetToArrayList(ResultSet rs, Class c){		
 		ArrayList list = new ArrayList();	
 		int currId = 0;
 		int i;
 		Field[] fields = c.getFields();
 		try {			
 			Object o = c.newInstance();
-			md = rs.getMetaData();
+			//ResultSetMetaData md = rs.getMetaData();
 			boolean hasData = false;
 			while (rs.next()){
 				hasData = true;
 				//New object for each new ID in result
 				if((i = (int)rs.getObject(1)) != currId){
 					//list.add(o);
-
 					o = c.newInstance();
 					currId = i;
 					Field field = c.getField("id");
 					field.set(o, currId);
 				}
 				//Attribute is always string
-				Boolean foundAttr = false;
-				String attribute = (String)rs.getObject(2);
-				for (Field field : fields){					
-					if(field.getName().equals(attribute))
+				String attribute = (String)rs.getObject(2);				
+				for (Field field : fields){
+					if(field.getName().equals(attribute)) {
 						field.set(o, rs.getObject(3));
-					/*if(field.getName().equals(attribute)) {
-						field.set(o, rs.getObject(3));
-						foundAttr = true;
 						break;
-					}*/
-				}
-				/*if(!foundAttr) {
-					if(c == Data.class) {
-						((Data)o).addProperties(attribute, rs.getObject(3));
 					}
-				}*/	
+					else if(field.getName().equals("date")) {
+						field.set(o, rs.getObject(4));
+					}
+				}
 			}
 			if(hasData)
 				list.add(o);
@@ -156,27 +148,33 @@ public class EAV_DB implements TestDb{
 	}
 	
 	@Override
-	public List<Parameter> getParameters(Patient patient) {
-		String where = " WHERE id = ANY (SELECT b.value FROM Data a, Data b WHERE a.attribute = 'patientId' AND a.value = " + patient.id + " AND b.id = a.id AND b.attribute = 'parameterId')";		
+	public List<Parameter> getParameters(int id) {
+		String where = " WHERE id = ANY (SELECT b.value FROM Data a, Data b WHERE a.attribute = 'patientId' AND a.value = " + id + " AND b.id = a.id AND b.attribute = 'parameterId')";		
 		return get("*", "Parameter", where, Parameter.class);
 	}
 
 	@Override
-	public List<Data> getPatientData(Patient patient) {
-		String where = " WHERE id = ANY (SELECT id FROM Data WHERE attribute = 'patientId' and value = " + patient.id + ")";
+	public List<Data> getPatientData(int id) {		
+		String where = " WHERE Data.id = ANY (SELECT id FROM Data WHERE attribute = 'patientId' and value = " + id + ")";
 		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);
 	}
 
 	@Override
-	public List<Data> getParamData(Parameter parameter, Patient patient) {		
-		String where = " WHERE id = ANY (SELECT id FROM Data WHERE attribute = 'parameterId' and value = " + parameter.id + ") AND id = ANY (SELECT id FROM Data WHERE attribute = 'patientId' and value = " + patient.id + ")";
+	public List<Data> getParamData(Data data) {
+		String where = " WHERE id = ANY (SELECT id FROM Data WHERE attribute = 'parameterId' and value = " + data.parameterId + ") AND id = ANY (SELECT id FROM Data WHERE attribute = 'patientId' and value = " + data.patientId + ")";
 		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);
 	}
 
 	@Override
-	public List<Patient> searchPatientByName(String name) {
-		String where = " WHERE attribute = 'name' AND value = '" + name + "'";
+	public List<Patient> searchPatientsByName(String name) {
+		String where = " WHERE id = ANY (SELECT id FROM Patient WHERE attribute = 'name' AND value = '" + name + "')";
 		return get("*", "Patient", where, Patient.class);
+	}
+
+	@Override
+	public List<Patient> searchPatientsByModule(String module) {
+		String where = " WHERE id = ANY (SELECT id FROM Patient WHERE attribute = 'module' AND value = '" + module + "')";
+		return get("*", "Patient", where, Patient.class);		
 	}
 	
 }

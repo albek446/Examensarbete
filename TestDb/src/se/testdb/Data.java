@@ -25,8 +25,11 @@ public class Data {
 		s +="Id: " + id;
 		s+= " Date: " + date;
 		s+= " ParamId: " + parameterId;
-		s+= " PatientId: " + patientId;
-		//s+= " Value: " + value.toString();
+		s+= " PatientId: " + patientId;		
+		if(value != null)
+			s+= " Value: " + value.toString();
+		else
+			s+= " Value: NULL";
 		System.out.println(s);
 	}
 }

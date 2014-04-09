@@ -13,15 +13,19 @@ public class DummyData {
 	private List<String> parameterUnits;
 	private List<String> parameterRounds;
 	private List<String> patientNames;
-	private List<String> patientModules;	
+	private List<String> patientModules;
 	
-	public DummyData() {		
+	public List<Parameter> parameters;
+	public List<Patient> patients;
+	public List<Data> data;
+	
+	public DummyData() {
 		parameterNames = Arrays.asList("pH", "pco2", "po2", "be", "sp02", "mode", "fi02", "pep", "ekg", "cvp", "tidavolym", "expirationsminut volym", "simdax", "temperatur", "dränväxteodling", "tinam", "adrenalin");
 		parameterCats = Arrays.asList("Vital Parameter", "Inställning", "avläsning", "pump", "labb", "odling", "antibiotika", "övrigt");
 		parameterUnits = Arrays.asList("kpa", "%", "cm", "y2", "ml", "dl", "m2", "c", "n", "ug");
 		parameterRounds = Arrays.asList("respiration", "cirkulation", "infektion", "övrigt");
 		patientNames = Arrays.asList("Kalle", "Anders", "Jonas", "Helge", "Flaskis", "Brask", "Bulle", "Soffis", "Mario", "Bord", "Baljan", "Mange", "QWERTYÄRMYCKETBRA", "Erik von Daffulegården Nils-Eriks Brorsdotter Karlsson");
-		patientModules = Arrays.asList("M12", "C07", "K85", "H00", "CHO", "ABC");		
+		patientModules = Arrays.asList("M12", "C07", "K85", "H00", "CHO", "ABC");
 	}
 	
 	public List<Parameter> getParameterDummyData(int nr){
@@ -35,6 +39,7 @@ public class DummyData {
 			float value = rand.nextFloat() * 1000.0f;
 			params.add(new Parameter(i, cat, name, unit, round, value, value, value, value));
 		}
+		parameters = params;
 		return params;
 	}
 	
@@ -46,6 +51,7 @@ public class DummyData {
 			String module = patientModules.get(rand.nextInt(patientModules.size()));
 			patients.add(new Patient(i, name, "19920306-0000", rand.nextInt(1), module));
 		}
+		this.patients = patients;
 		return patients;
 	}
 	
@@ -63,7 +69,7 @@ public class DummyData {
 			Data d = new Data(i, getRandomDate(start, end), paramId, patId, value);
 			data.add(d);
 		}
-		
+		this.data = data;
 		return data;
 	}
 	

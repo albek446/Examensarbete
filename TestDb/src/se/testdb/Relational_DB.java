@@ -140,20 +140,26 @@ public class Relational_DB implements TestDb{
 	private List resultSetToArrayList(ResultSet rs, Class c){
 		ResultSetMetaData md;
 		
-		ArrayList list = new ArrayList();
-		HashMap<String,Object> valueProperties = new HashMap<String,Object>();		
+		ArrayList list = new ArrayList();				
 		Field[] fields = c.getFields();
 		try {			
 			md = rs.getMetaData();		
 			while (rs.next()){
 				Object o = c.newInstance();
-				Boolean foundAttr = false;	
+				//Boolean foundAttr = false;	
 								
-				for(int i=1;i<md.getColumnCount();i++) {
+				for(int i=1;i<=md.getColumnCount();i++) {
 					String col = md.getColumnName(i);
 					Object val = rs.getObject(i);
-					for (Field field : fields){
-						field.set(o, val);
+					for (Field field : fields){						
+						if(field.getName().equals(col)){
+							if(field.getName().equals("id"))
+								val = Integer.parseInt(val+"");
+							else if(!field.getName().equals("date"))
+								val = val+"";							
+							field.set(o, val);
+							break;
+						}
 						/*if(field.getName().equals(col)) {
 							if(col.equals("patientId") || col.equals("parameterId")) {
 								val = ""+val;
@@ -172,61 +178,60 @@ public class Relational_DB implements TestDb{
 				}
 				list.add(o);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			System.out.println(e.toString());
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		return list;
 	}
 
 	@Override
-	public List<Parameter> getParameters(Patient patient) {
+	public List<Parameter> getParameters(int id) {		
 		String query = "SELECT * FROM Parameter"; 
 		query += " WHERE id = ANY (";
 		query +=" SELECT parameterId FROM Data";
-        query += " WHERE patientId = "+patient.id;
+        query += " WHERE patientId = " + id;
 		query +=");";
 		return get(query,Parameter.class);
 	}
 
 	@Override
-	public List<Data> getPatientData(Patient patient) {
-		String dataQuery = "SELECT * FROM Data";
+	public List<Data> getPatientData(int id) {		
+		String dataQuery = "SELECT Data.*, %s.value FROM Data";
 		dataQuery += " LEFT JOIN %s";
-		dataQuery += " On Data.id = %s.dataId";
-		dataQuery += " Where Data.patientId = " + patient.id;
+		dataQuery += " ON Data.id = %s.dataId";
+		dataQuery += " WHERE Data.patientId = " + id;
+		dataQuery += " AND %s.value IS NOT NULL";
 		List<Data> data = new ArrayList<>();
 		for(String table : dataTables){
-			data.addAll(get(String.format(dataQuery,table,table), Data.class));
+			data.addAll(get(String.format(dataQuery,table,table, table, table), Data.class));
 		}
 		return data;
 	}
 
 	@Override
-	public List<Data> getParamData(Parameter parameter, Patient patient) {
+	public List<Data> getParamData(Data data) {
 		String dataQuery = "SELECT * FROM Data";
 		dataQuery += " LEFT JOIN %s";
 		dataQuery += " On Data.id = %s.dataId";
-		dataQuery += " Where Data.patientId = " + patient.id;
-		dataQuery += " AND Data.parameterId = " + parameter.id;
-		List<Data> data = new ArrayList<>();
+		dataQuery += " Where Data.patientId = " + data.patientId;
+		dataQuery += " AND Data.parameterId = " + data.parameterId;
+		dataQuery += " AND %s.value IS NOT NULL";
+		List<Data> d = new ArrayList<>();
 		for(String table : dataTables){
-			data.addAll(get(String.format(dataQuery,table,table), Data.class));
+			d.addAll(get(String.format(dataQuery,table,table,table), Data.class));
 		}
-		return null;
+		return d;
 	}
 
 	@Override
-	public List<Patient> searchPatientByName(String name) {
+	public List<Patient> searchPatientsByName(String name) {
 		String query = "SELECT * FROM Patient WHERE name='"+name+"'";
+		return get(query,Patient.class);
+	}
+
+	@Override
+	public List<Patient> searchPatientsByModule(String module) {
+		String query = "SELECT * FROM Patient WHERE module='"+module+"'";
 		return get(query,Patient.class);
 	}
 

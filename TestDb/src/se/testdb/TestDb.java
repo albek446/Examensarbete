@@ -6,8 +6,9 @@ public interface TestDb {
 	void insert(Parameter parameter);
 	void insert(Data data);
 	void insert(Patient patient);
-	List<Parameter> getParameters(Patient patient);
-	List<Data> getPatientData(Patient patient);
-	List<Data> getParamData(Parameter parameter, Patient patient);
-	List<Patient> searchPatientByName(String name);
+	List<Parameter> getParameters(int id);
+	List<Data> getPatientData(int id);
+	List<Data> getParamData(Data data);
+	List<Patient> searchPatientsByName(String name);
+	List<Patient> searchPatientsByModule(String module);
 }
