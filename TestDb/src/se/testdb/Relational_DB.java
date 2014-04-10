@@ -32,9 +32,14 @@ public class Relational_DB implements TestDb{
     	    for (String table : dataTables){
     	    	stmt.executeUpdate(clearEntriesQuery + " " + table);
     	    }
+    	    
     		stmt.executeUpdate(clearEntriesQuery+" Data");
     		stmt.executeUpdate("ALTER TABLE Data AUTO_INCREMENT = 1");
     		stmt.executeUpdate(clearEntriesQuery+" Patient");
+    		stmt.executeUpdate(clearEntriesQuery+" Bed");
+    		stmt.executeUpdate("ALTER TABLE Bed AUTO_INCREMENT = 1");
+    		stmt.executeUpdate(clearEntriesQuery+" Module");
+    		stmt.executeUpdate("ALTER TABLE Module AUTO_INCREMENT = 1");
     		stmt.executeUpdate(clearEntriesQuery+" Parameter");
     		stmt.executeUpdate("ALTER TABLE Parameter AUTO_INCREMENT = 1");
 			
@@ -57,8 +62,7 @@ public class Relational_DB implements TestDb{
     				argValues += "" + e.getValue() + ", ";
     			else
     				argValues += "'" + e.getValue() + "', ";    			
-			} catch (IllegalArgumentException er) {
-				// TODO Auto-generated catch block
+			} catch (IllegalArgumentException er) {				
 				er.printStackTrace();
 			}
     	}
@@ -105,8 +109,8 @@ public class Relational_DB implements TestDb{
     			stmt.execute(q2);
 
 
-    	} catch (SQLException ex) {
-            System.out.println(ex.toString());
+    	} catch (SQLException ex) {    		
+    		System.out.println(ex.toString());    		
         }
     }
     
@@ -125,6 +129,16 @@ public class Relational_DB implements TestDb{
 		insertRow("Patient", patient);
 	}
 	
+	@Override
+	public void insert(Bed bed) {
+		insertRow("Bed", bed);		
+	}
+
+	@Override
+	public void insert(Module module) {
+		insertRow("Module", module);
+	}
+	
 	private List get(String query , Class c){
 		ResultSet rs = null;
 		try {
@@ -132,6 +146,7 @@ public class Relational_DB implements TestDb{
     		rs = stmt.executeQuery(query);
         } catch (SQLException ex) {
             System.out.println(ex.toString());
+            ex.printStackTrace();
         }
 		return resultSetToArrayList(rs, c);
 	}
@@ -189,7 +204,7 @@ public class Relational_DB implements TestDb{
 		String query = "SELECT * FROM Parameter"; 
 		query += " WHERE id = ANY (";
 		query +=" SELECT parameterId FROM Data";
-        query += " WHERE patientId = " + id;
+        query += " WHERE bed = " + id;
 		query +=");";
 		return get(query,Parameter.class);
 	}
@@ -199,7 +214,7 @@ public class Relational_DB implements TestDb{
 		String dataQuery = "SELECT Data.*, %s.value FROM Data";
 		dataQuery += " LEFT JOIN %s";
 		dataQuery += " ON Data.id = %s.dataId";
-		dataQuery += " WHERE Data.patientId = " + id;
+		dataQuery += " WHERE Data.bed = " + id;
 		dataQuery += " AND %s.value IS NOT NULL";
 		List<Data> data = new ArrayList<>();
 		for(String table : dataTables){
@@ -209,12 +224,12 @@ public class Relational_DB implements TestDb{
 	}
 
 	@Override
-	public List<Data> getParamData(Data data) {
+	public List<Data> getParamData(String parameterId, String bed) {
 		String dataQuery = "SELECT * FROM Data";
 		dataQuery += " LEFT JOIN %s";
 		dataQuery += " On Data.id = %s.dataId";
-		dataQuery += " Where Data.patientId = " + data.patientId;
-		dataQuery += " AND Data.parameterId = " + data.parameterId;
+		dataQuery += " Where Data.bed = " + bed;
+		dataQuery += " AND Data.parameterId = " + parameterId;
 		dataQuery += " AND %s.value IS NOT NULL";
 		List<Data> d = new ArrayList<>();
 		for(String table : dataTables){
@@ -224,15 +239,27 @@ public class Relational_DB implements TestDb{
 	}
 
 	@Override
-	public List<Patient> searchPatientsByName(String name) {
+	public List<Patient> getPatientsByName(String name) {
 		String query = "SELECT * FROM Patient WHERE name='"+name+"'";
 		return get(query,Patient.class);
 	}
 
 	@Override
-	public List<Patient> searchPatientsByModule(String module) {
-		String query = "SELECT * FROM Patient WHERE module='"+module+"'";
+	public List<Patient> getPatientsForModule(int module) {
+		String query = "SELECT * FROM Patient WHERE bed =";
+		query += " ANY (SELECT id FROM Bed WHERE module = " + module + ")";
 		return get(query,Patient.class);
 	}
 
+	@Override
+	public List<Bed> getBedsForModule(String id) {
+		String query = "SELECT * FROM Bed WHERE module = " + id;
+		return get(query, Bed.class);
+	}
+
+	@Override
+	public List<Module> getModules() {
+		String query = "SELECT * FROM Module";
+		return get(query, Module.class);
+	}
 }

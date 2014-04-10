@@ -3,6 +3,7 @@ package se.testdb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -13,10 +14,13 @@ public class DummyData {
 	private List<String> parameterUnits;
 	private List<String> parameterRounds;
 	private List<String> patientNames;
-	private List<String> patientModules;
+	private List<String> bedNames;
+	private List<String> moduleNames;
 	
 	public List<Parameter> parameters;
 	public List<Patient> patients;
+	public List<Bed> beds;
+	public List<Module> modules;
 	public List<Data> data;
 	
 	public DummyData() {
@@ -25,10 +29,11 @@ public class DummyData {
 		parameterUnits = Arrays.asList("kpa", "%", "cm", "y2", "ml", "dl", "m2", "c", "n", "ug");
 		parameterRounds = Arrays.asList("respiration", "cirkulation", "infektion", "övrigt");
 		patientNames = Arrays.asList("Kalle", "Anders", "Jonas", "Helge", "Flaskis", "Brask", "Bulle", "Soffis", "Mario", "Bord", "Baljan", "Mange", "QWERTYÄRMYCKETBRA", "Erik von Daffulegården Nils-Eriks Brorsdotter Karlsson");
-		patientModules = Arrays.asList("M12", "C07", "K85", "H00", "CHO", "ABC");
+		bedNames = Arrays.asList("B32", "A47", "PPP", "QQQ", "GGG", "AAA");
+		moduleNames = Arrays.asList("M12", "C07", "K85", "H00", "CHO", "ABC");
 	}
 	
-	public List<Parameter> getParameterDummyData(int nr){
+	public void genParameterDummyData(int nr){
 		List<Parameter> params = new ArrayList<>();
 		
 		for (int i = 1; i <= nr; i++){
@@ -40,37 +45,52 @@ public class DummyData {
 			params.add(new Parameter(i, cat, name, unit, round, value, value, value, value));
 		}
 		parameters = params;
-		return params;
 	}
 	
-	public List<Patient> getPatientDummyData(int nr){
+	public void genPatientDummyData(int nr){
 		List<Patient> patients = new ArrayList<>();
 		
 		for (int i = 1; i <= nr; i++){
-			String name = patientNames.get(rand.nextInt(patientNames.size()));
-			String module = patientModules.get(rand.nextInt(patientModules.size()));
-			patients.add(new Patient(i, name, "19920306-0000", rand.nextInt(1), module));
+			String name = patientNames.get(rand.nextInt(patientNames.size()));			
+			patients.add(new Patient(i, i+"", name, "19920306-0000", rand.nextInt(2)));
 		}
 		this.patients = patients;
-		return patients;
 	}
 	
-	public List<Data> getDummyData(List<Patient> patients, List<Parameter> params, int nr) {
+	public void genDummyModules(int nr){
+		List<Module> modules = new ArrayList<>();
+		for (int i = 1; i <= nr; i++){
+			String name = moduleNames.get(rand.nextInt(moduleNames.size()));
+			modules.add(new Module(i, name));
+		}
+		this.modules = modules;
+	}
+	
+	public void genDummyBeds(int nr){
+		List<Bed> beds = new ArrayList<>();
+		for (int i = 1; i <= nr; i++){
+			String name = bedNames.get(rand.nextInt(bedNames.size()));
+			int moduleId = modules.get(rand.nextInt(modules.size())).id;
+			beds.add(new Bed(i, name, moduleId+""));
+		}
+		this.beds = beds;
+	}
+	
+	public void genDummyData(int nr) {
 		List<Data> data = new ArrayList<>();
 			
-		for (int i = 0; i< nr; i++){
+		for (int i = 1; i< nr; i++){
 			
 			long week = 7*1000*60*60*24;
 			Date end = new Date();
 			Date start = new Date(end.getTime() - week);			
-			String paramId = params.get(rand.nextInt(params.size())).id + "";
-			String patId = patients.get(rand.nextInt(patients.size())).id + "";
+			String paramId = parameters.get(rand.nextInt(parameters.size())).id + "";
+			String bedId = beds.get(rand.nextInt(beds.size())).id + "";
 			float value = rand.nextFloat() * 1000.0f;
-			Data d = new Data(i, getRandomDate(start, end), paramId, patId, value);
+			Data d = new Data(i, getRandomDate(start, end), paramId, bedId, value);
 			data.add(d);
 		}
 		this.data = data;
-		return data;
 	}
 	
 	private Date getRandomDate(Date start, Date end) {		

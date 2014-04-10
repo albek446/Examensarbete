@@ -31,6 +31,8 @@ public class EAV_DB implements TestDb{
     		stmt.executeUpdate(clearEntriesQuery+" DataTime");
     		stmt.executeUpdate(clearEntriesQuery+" Data");
     		stmt.executeUpdate(clearEntriesQuery+" Patient");
+    		stmt.executeUpdate(clearEntriesQuery+" Module");
+    		stmt.executeUpdate(clearEntriesQuery+" Bed");
     		stmt.executeUpdate(clearEntriesQuery+" Parameter");
     		
 		} catch (SQLException e) {
@@ -61,18 +63,17 @@ public class EAV_DB implements TestDb{
 	}
 
 	@Override
-	public void insert(Patient patient) {
-		//insertRow("Patient", patient.id + "", "id", patient.id + "");
+	public void insert(Patient patient) {		
 		insertRow("Patient", patient.id + "", "name", patient.name);
 		insertRow("Patient", patient.id + "", "socialSecurityNumber", patient.socialSecurityNumber);
 		insertRow("Patient", patient.id + "", "sex", patient.sex + "");
-		insertRow("Patient", patient.id + "", "module", patient.module);
+		insertRow("Patient", patient.id + "", "bed", patient.bed);
 	}
 	
 	@Override
 	public void insert(Data data) {
 		insertRow("Data", data.id + "", "parameterId", data.parameterId + "");
-		insertRow("Data", data.id + "", "patientId", data.patientId + "");
+		insertRow("Data", data.id + "", "bed", data.bed + "");
 		insertRow("Data", data.id + "", "value", data.value + "");
 		try {			
     		String query = "INSERT INTO DataTime(dataId, date) VALUES(" + data.id + ", " + data.date + ")";
@@ -82,14 +83,25 @@ public class EAV_DB implements TestDb{
             System.out.println(ex.toString());
         }
 	}
+	
+	@Override
+	public void insert(Bed bed) {		
+		insertRow("Bed", bed.id+"", "module", bed.module+"");		
+		insertRow("Bed", bed.id+"", "name", bed.name);		
+	}
+	
+	@Override
+	public void insert(Module module) {
+		insertRow("Module", module.id+"", "name", module.name);
+	}
 
 	private List get(String select, String table, String where, Class c){
 		ResultSet rs = null;
 		try {
     		String query = String.format(selectQuery + where, select, table);    		
-            Statement stmt = con.createStatement();
-    		rs = stmt.executeQuery(query);
-        } catch (SQLException ex) {
+            Statement stmt = con.createStatement();            
+    		rs = stmt.executeQuery(query);    		
+        } catch (SQLException ex) {        	
             System.out.println(ex.toString());
         }
 		return resultSetToArrayList(rs, c);
@@ -149,32 +161,43 @@ public class EAV_DB implements TestDb{
 	
 	@Override
 	public List<Parameter> getParameters(int id) {
-		String where = " WHERE id = ANY (SELECT b.value FROM Data a, Data b WHERE a.attribute = 'patientId' AND a.value = " + id + " AND b.id = a.id AND b.attribute = 'parameterId')";		
+		String where = " WHERE id = ANY (SELECT b.value FROM Data a, Data b WHERE a.attribute = 'bed' AND a.value = " + id + " AND b.id = a.id AND b.attribute = 'parameterId')";		
 		return get("*", "Parameter", where, Parameter.class);
 	}
 
 	@Override
 	public List<Data> getPatientData(int id) {		
-		String where = " WHERE Data.id = ANY (SELECT id FROM Data WHERE attribute = 'patientId' and value = " + id + ")";
+		String where = " WHERE Data.id = ANY (SELECT id FROM Data WHERE attribute = 'bed' and value = " + id + ")";
 		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);
 	}
 
 	@Override
-	public List<Data> getParamData(Data data) {
-		String where = " WHERE id = ANY (SELECT id FROM Data WHERE attribute = 'parameterId' and value = " + data.parameterId + ") AND id = ANY (SELECT id FROM Data WHERE attribute = 'patientId' and value = " + data.patientId + ")";
+	public List<Data> getParamData(String parameterId, String bedId) {
+		String where = " WHERE id = ANY (SELECT id FROM Data WHERE attribute = 'parameterId' and value = " + parameterId + ") AND id = ANY (SELECT id FROM Data WHERE attribute = 'bed' and value = " + bedId + ")";
 		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);
 	}
 
 	@Override
-	public List<Patient> searchPatientsByName(String name) {
+	public List<Patient> getPatientsByName(String name) {
 		String where = " WHERE id = ANY (SELECT id FROM Patient WHERE attribute = 'name' AND value = '" + name + "')";
 		return get("*", "Patient", where, Patient.class);
 	}
 
 	@Override
-	public List<Patient> searchPatientsByModule(String module) {
-		String where = " WHERE id = ANY (SELECT id FROM Patient WHERE attribute = 'module' AND value = '" + module + "')";
+	public List<Patient> getPatientsForModule(int id) {
+		String where = " WHERE id = ANY (SELECT id FROM Patient WHERE attribute = 'bed' AND value = ANY (SELECT id FROM Bed WHERE attribute = 'module' AND value = '" + id + "'))";
 		return get("*", "Patient", where, Patient.class);		
 	}
-	
+
+	@Override
+	public List<Bed> getBedsForModule(String id) {
+		String where = " WHERE id = ANY (SELECT id FROM Bed WHERE attribute = 'module' AND value = '" + id + "')";
+		return get("*", "Bed", where, Bed.class);
+	}
+
+	@Override
+	public List<Module> getModules() {
+		String where = "";
+		return get("*", "Module", where, Module.class);
+	}	
 }
