@@ -1,5 +1,9 @@
 package se.testdb;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class Parameter {
 	public int id;
 	public String round;
@@ -19,10 +23,10 @@ public class Parameter {
 		this.name = name;
 		this.round = round;
 		this.unit = unit;
-		this.min = min + "";
-		this.max = max + "";
-		this.low = low + "";
-		this.high = high + "";
+		this.min = new DecimalFormat("#.###").format(min).replace(",", ".");		
+		this.max = this.min;
+		this.low = this.min;
+		this.high = this.min;
 	}
 	
 	public void print(){

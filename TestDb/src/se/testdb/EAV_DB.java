@@ -199,5 +199,12 @@ public class EAV_DB implements TestDb{
 	public List<Module> getModules() {
 		String where = "";
 		return get("*", "Module", where, Module.class);
+	}
+
+	@Override
+	public List<Data> getDataFromTimeSpan(String bedId, long startTime,
+			long endTime) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

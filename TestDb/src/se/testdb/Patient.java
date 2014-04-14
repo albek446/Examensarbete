@@ -20,7 +20,7 @@ public class Patient {
 	public void print(){
 		String a = "Patient:\n";
 		a += "Id: " + id;
-		a += "Bed: " + bed;
+		a += " Bed: " + bed;
 		a += " Name: " + name;
 		a += " SocialSecurityNumber: " + socialSecurityNumber;	
 		System.out.println(a);		

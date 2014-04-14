@@ -58,6 +58,9 @@ public class Relational_DB implements TestDb{
     			continue;
     		try {   			
     			columnNames += e.getKey() + ", ";
+    			/*if (e.getKey().equals("min")){
+    				argValues += "" + Float.parseFloat(e.getValue()+"") + ", ";
+    			}*/
     			if(e.getValue().equals("LAST_INSERT_ID()"))
     				argValues += "" + e.getValue() + ", ";
     			else
@@ -92,7 +95,7 @@ public class Relational_DB implements TestDb{
     	catch(Exception e) {
 	    	e.printStackTrace();
     	}
-    	String q1 = insertQuery(f1, table, o);
+    	String q1 = insertQuery(f1, table, o);    	
     	String q2 = null;
     	if(f2.size() != 0) {
     		if(f2.size() > 1) {
@@ -103,7 +106,7 @@ public class Relational_DB implements TestDb{
     	
     	
     	try {    		
-            Statement stmt = con.createStatement();
+            Statement stmt = con.createStatement();            
             stmt.execute(q1);
             if (q2 != null)
     			stmt.execute(q2);
@@ -115,7 +118,7 @@ public class Relational_DB implements TestDb{
     }
     
 	@Override
-	public void insert(Parameter parameter) {
+	public void insert(Parameter parameter) {		
 		insertRow("Parameter", parameter);
 	}
 
@@ -261,5 +264,24 @@ public class Relational_DB implements TestDb{
 	public List<Module> getModules() {
 		String query = "SELECT * FROM Module";
 		return get(query, Module.class);
+	}
+
+	@Override
+	public List<Data> getDataFromTimeSpan(String bedId, long startTime, long endTime) {
+		String dataQuery = "SELECT Data.*, %s.value FROM Data";
+		dataQuery += " LEFT JOIN %s";
+		dataQuery += " ON Data.id = %s.dataId";
+		dataQuery += " WHERE Data.bed = " + bedId;
+		//dataQuery += " AND Data.date >= " + startTime;
+		//dataQuery += " AND Data.date <= " + endTime;
+		dataQuery += " AND %s.value IS NOT NULL";		
+		List<Data> data = new ArrayList<>();
+		for(String table : dataTables){
+			data.addAll(get(String.format(dataQuery, table, table, table, table), Data.class));
+		}
+		for(Data d : data){
+			d.print();
+		}
+		return data;
 	}
 }

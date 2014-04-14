@@ -1,5 +1,6 @@
 package se.testdb;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 public class Data {
@@ -17,7 +18,7 @@ public class Data {
 		this.date = date.getTime();
 		this.parameterId = paramId;
 		this.bed = bed;
-		this.value = value;
+		this.value = new DecimalFormat(".###").format(value).replace(",", ".");
 	}
 	
 	public void print(){		

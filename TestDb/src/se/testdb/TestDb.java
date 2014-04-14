@@ -15,4 +15,5 @@ public interface TestDb {
 	List<Patient> getPatientsForModule(int id);
 	List<Bed> getBedsForModule(String id);
 	List<Module> getModules();
+	List<Data> getDataFromTimeSpan(String bedId, long startTime, long endTime);
 }

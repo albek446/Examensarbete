@@ -3,6 +3,7 @@ package se.testdb;
 import java.lang.reflect.Field;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -115,24 +116,38 @@ public class Tester {
 		return new SimpleEntry<Double, Boolean>(endTime, valid);
 	}
 	
+	public SimpleEntry<Double, Boolean> testGetDataFromTimespan(){
+		double startTime = System.currentTimeMillis();
+		List<Data> data = currentTest.getDataFromTimeSpan(dd.data.get(2).bed, Long.MIN_VALUE, Long.MAX_VALUE);
+		double endTime = System.currentTimeMillis() - startTime;
+		boolean valid = validate(data, dd.data, Data.class);
+		for (Data d : data)
+			d.print();
+		return new SimpleEntry<Double, Boolean>(endTime, valid);
+	}	
+	
 	private boolean validate(List<?> resultData, List<?> dummyData, Class c){
+		int foundIdCounter = 0;
 		try {
-			Field fieldId = c.getField("id");
+			Field fieldId = c.getField("id");			
 			for(Object resElem : resultData){
 				for(Object dummyElem : dummyData){
-					if(fieldId.get(resElem) == fieldId.get(dummyElem)){
-						for(Field f : c.getFields()){
-							if(f.get(resElem) != f.get(dummyElem)){
+					//System.out.println(fieldId.get(resElem) + " - " + fieldId.get(dummyElem));
+					if(fieldId.get(resElem).equals(fieldId.get(dummyElem))){						
+						foundIdCounter += 1;
+						for(Field f : c.getFields()){							
+							if(!f.get(resElem).equals(f.get(dummyElem))){
 								return false;
 							}
 						}
-					}
+						break;
+					}					
 				}
 			}
 		} catch (Exception e) {			
 			System.out.println(e.toString());			
 			return false;
 		}
-		return true;
+		return foundIdCounter == resultData.size(); 
 	}
 }

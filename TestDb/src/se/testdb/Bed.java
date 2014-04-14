@@ -14,7 +14,7 @@ public class Bed {
 	}
 	
 	public void print(){
-		String a = "Patient:\n";
+		String a = "Bed:\n";
 		a += "Id: " + id;
 		a += " Name: " + name;		
 		a += " Module: " + module;		
