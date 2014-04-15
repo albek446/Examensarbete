@@ -57,7 +57,7 @@ public class Tester {
 		//DummyData dd = new DummyData();
 		//Patient patient = dd.getPatientDummyData(1).get(0);
 		double startTime = System.currentTimeMillis();
-		List<Data> d = currentTest.getPatientData(Integer.parseInt(dd.data.get(2).bed));
+		List<Data> d = currentTest.getPatientData(Integer.parseInt(dd.data.get(0).bed));
 		double endTime = System.currentTimeMillis() - startTime;
 		boolean valid = validate(d, dd.data, Data.class);
 		//for (Data d2 : d)
@@ -118,11 +118,11 @@ public class Tester {
 	
 	public SimpleEntry<Double, Boolean> testGetDataFromTimespan(){
 		double startTime = System.currentTimeMillis();
-		List<Data> data = currentTest.getDataFromTimeSpan(dd.data.get(2).bed, Long.MIN_VALUE, Long.MAX_VALUE);
+		List<Data> data = currentTest.getDataFromTimeSpan(dd.data.get(0).bed, Long.MIN_VALUE, Long.MAX_VALUE);
 		double endTime = System.currentTimeMillis() - startTime;
-		boolean valid = validate(data, dd.data, Data.class);
-		for (Data d : data)
-			d.print();
+		boolean valid = validate(data, dd.data, Data.class);		
+		//for (Data d : data)
+		//	d.print();
 		return new SimpleEntry<Double, Boolean>(endTime, valid);
 	}	
 	

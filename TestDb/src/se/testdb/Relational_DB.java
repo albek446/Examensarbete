@@ -222,7 +222,7 @@ public class Relational_DB implements TestDb{
 		List<Data> data = new ArrayList<>();
 		for(String table : dataTables){
 			data.addAll(get(String.format(dataQuery,table,table, table, table), Data.class));
-		}
+		}		
 		return data;
 	}
 
@@ -272,16 +272,13 @@ public class Relational_DB implements TestDb{
 		dataQuery += " LEFT JOIN %s";
 		dataQuery += " ON Data.id = %s.dataId";
 		dataQuery += " WHERE Data.bed = " + bedId;
-		//dataQuery += " AND Data.date >= " + startTime;
-		//dataQuery += " AND Data.date <= " + endTime;
-		dataQuery += " AND %s.value IS NOT NULL";		
+		dataQuery += " AND Data.date >= " + startTime;
+		dataQuery += " AND Data.date <= " + endTime;
+		dataQuery += " AND %s.value IS NOT NULL";
 		List<Data> data = new ArrayList<>();
 		for(String table : dataTables){
-			data.addAll(get(String.format(dataQuery, table, table, table, table), Data.class));
-		}
-		for(Data d : data){
-			d.print();
-		}
-		return data;
+			data.addAll(get(String.format(dataQuery,table,table, table, table), Data.class));
+		}		
+		return data;		
 	}
 }

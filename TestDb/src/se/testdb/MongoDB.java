@@ -1,12 +1,10 @@
 package se.testdb;
 
-import java.lang.reflect.Field;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBList;
@@ -343,10 +341,34 @@ public class MongoDB implements TestDb {
 	}
 
 	@Override
-	public List<Data> getDataFromTimeSpan(String bedId, long startTime,
-			long endTime) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Data> getDataFromTimeSpan(String bedId, long startTime, long endTime) {
+		String queryMatch = "{'data.bedId' : { $oid : '"+ bedIds.get(bedId+"") + "'},";
+		queryMatch += " 'data.date' : {$gte : " + startTime + ", $lte : " + endTime + "}}";
+		String queryFilter = "{'data' : {$elemMatch : {'bedId' : { $oid : '" + bedIds.get(bedId+"") + "'}}}}";		
+		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);
+		BasicDBObject filter = (BasicDBObject)JSON.parse(queryFilter);
+		DBCursor cursor = db.getCollection("parameters").find(match, filter);
+		
+		List<Data> result = new ArrayList<>();
+		
+		while (cursor.hasNext()) {
+		    BasicDBObject obj = (BasicDBObject) cursor.next();
+		    ObjectId paramId = (ObjectId)obj.get("_id");
+		    BasicDBList data = (BasicDBList)obj.get("data");	    
+		    for (Object dataObj : data){
+		    	BasicDBObject o = (BasicDBObject)dataObj;
+		    	Data d = new Data();
+		    	ObjectId dataId = (ObjectId)o.get("_id");
+		    	ObjectId bId = (ObjectId)o.get("bedId");
+		    	d.id = Integer.parseInt(dataIds.get(dataId.toString()));
+		    	d.parameterId = parameterIds.get(paramId.toString());
+		    	d.bed = bedIds.get(bId.toString());
+		    	d.value = o.get("value");
+		    	d.date = o.getLong("date");
+		    	result.add(d);		    	
+		    }		    
+		}
+		return result;
 	}
 
 }

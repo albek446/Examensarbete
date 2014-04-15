@@ -6,12 +6,12 @@ import java.util.AbstractMap.SimpleEntry;
 
 public class Main {
 	public static void main(String args[]) throws ParseException{
-		//System.out.println("EAV-tests");
-		//runTests(new Tester(new EAV_DB()));		
-		System.out.println("Relation-tests");
+		System.out.println("#####EAV-tests#####");
+		runTests(new Tester(new EAV_DB()));		
+		System.out.println("\n#####Relation-tests#####");
 		runTests(new Tester(new Relational_DB()));
-		//System.out.println("MongoDB-tests");
-		//runTests(new Tester(new MongoDB()));
+		System.out.println("\n#####MongoDB-tests#####");
+		runTests(new Tester(new MongoDB()));
 	}
 	
 	private static void runTests(Tester tester) {

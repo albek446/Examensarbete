@@ -98,7 +98,7 @@ public class EAV_DB implements TestDb{
 	private List get(String select, String table, String where, Class c){
 		ResultSet rs = null;
 		try {
-    		String query = String.format(selectQuery + where, select, table);    		
+    		String query = String.format(selectQuery + where, select, table);
             Statement stmt = con.createStatement();            
     		rs = stmt.executeQuery(query);    		
         } catch (SQLException ex) {        	
@@ -202,9 +202,10 @@ public class EAV_DB implements TestDb{
 	}
 
 	@Override
-	public List<Data> getDataFromTimeSpan(String bedId, long startTime,
-			long endTime) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Data> getDataFromTimeSpan(String bedId, long startTime, long endTime) {		
+		String where = " WHERE DataTime.date >= " + startTime;
+		where += " AND DataTime.date <= " + endTime;
+		where += " AND Data.id = ANY (SELECT id FROM Data WHERE attribute = 'bed' and value = " + bedId + ")";
+		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);		
 	}	
 }
