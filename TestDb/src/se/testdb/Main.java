@@ -27,6 +27,9 @@ public class Main {
 		results.put("getBedsForModuleResult", tester.testGetBedsForModule());
 		results.put("getModulesResult", tester.testGetModules());
 		results.put("getDataFromTimespanResult", tester.testGetDataFromTimespan());
+		results.put("addFieldToDataResult", tester.testAddFieldToData());
+		results.put("updateValueForDataResult", tester.testUpdateValueForData());
+		results.put("removeFieldForDataResult", tester.testRemoveFieldForData());
 		
 		for(String key : results.keySet()){
 			System.out.println(key + ": Time:" + results.get(key).getKey() + " Valid: " + results.get(key).getValue());

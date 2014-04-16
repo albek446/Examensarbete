@@ -16,4 +16,8 @@ public interface TestDb {
 	List<Bed> getBedsForModule(String id);
 	List<Module> getModules();
 	List<Data> getDataFromTimeSpan(String bedId, long startTime, long endTime);
+	
+	boolean addFieldToData(String entry, String field);
+	boolean updateValueForData(String entry, String value);
+	boolean removeFieldForData(String entry, String field);
 }

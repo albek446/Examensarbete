@@ -207,5 +207,36 @@ public class EAV_DB implements TestDb{
 		where += " AND DataTime.date <= " + endTime;
 		where += " AND Data.id = ANY (SELECT id FROM Data WHERE attribute = 'bed' and value = " + bedId + ")";
 		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);		
-	}	
+	}
+
+	@Override
+	public boolean addFieldToData(String entry, String field) {		
+		return true;
+	}
+
+	@Override
+	public boolean updateValueForData(String entry, String value) {		
+		String query = "UPDATE " + entry + " SET value = '" + value + "' WHERE attribute = 'value'";
+		try {
+    	    Statement stmt = con.createStatement();
+    		stmt.executeUpdate(query);
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+            return false;
+        }
+		return true;
+	}
+
+	@Override
+	public boolean removeFieldForData(String entry, String field) {
+		String query = "DELETE FROM " + entry + " WHERE attribute = 'value'";
+		try {
+    	    Statement stmt = con.createStatement();
+    		stmt.executeUpdate(query);
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+            return false;
+        }
+		return true;
+	}
 }

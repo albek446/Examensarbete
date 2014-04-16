@@ -371,4 +371,62 @@ public class MongoDB implements TestDb {
 		return result;
 	}
 
+	@Override
+	public boolean addFieldToData(String entry, String field) {
+		return true;
+	}
+
+	@Override
+	public boolean updateValueForData(String entry, String value) {		
+		String queryMatch = "{data : {$exists : true}}";		
+		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);		
+		DBCursor cursor = db.getCollection("parameters").find(match);
+		try{
+			while(cursor.hasNext()){
+				BasicDBObject obj = (BasicDBObject) cursor.next();				
+				List<BasicDBObject> a = (ArrayList)obj.get("data");
+				for(BasicDBObject o : a){
+					ObjectId id = o.getObjectId("_id");
+					String tempQuery = "{'data._id' : {$oid : '" + id.toString() + "'}}";
+					String hej = "{'$set' : {'data.$.value' : '" + value + "'}}";
+					BasicDBObject q = (BasicDBObject)JSON.parse(tempQuery);
+					BasicDBObject w = (BasicDBObject)JSON.parse(hej);
+					db.getCollection("parameters").update(q, w);	
+				}				
+			}
+		}catch(Exception e){
+			System.out.println(e.toString());
+			return false;
+		}finally{
+			cursor.close();
+		}
+		return true;
+	}
+
+	@Override
+	public boolean removeFieldForData(String entry, String field) {
+		String queryMatch = "{data : {$exists : true}}";		
+		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);		
+		DBCursor cursor = db.getCollection("parameters").find(match);
+		try{
+			while(cursor.hasNext()){
+				BasicDBObject obj = (BasicDBObject) cursor.next();				
+				List<BasicDBObject> a = (ArrayList)obj.get("data");
+				for(BasicDBObject o : a){
+					ObjectId id = o.getObjectId("_id");
+					String tempQuery = "{'data._id' : {$oid : '" + id.toString() + "'}}";
+					String hej = "{'$unset' : {'data.$.value' : 1}}";
+					BasicDBObject q = (BasicDBObject)JSON.parse(tempQuery);
+					BasicDBObject w = (BasicDBObject)JSON.parse(hej);
+					db.getCollection("parameters").update(q, w);	
+				}				
+			}
+		}catch(Exception e){
+			System.out.println(e.toString());
+			return false;
+		}finally{
+			cursor.close();
+		}
+		return true;
+	}
 }

@@ -33,7 +33,7 @@ public class Relational_DB implements TestDb{
     	    	stmt.executeUpdate(clearEntriesQuery + " " + table);
     	    }
     	    
-    		stmt.executeUpdate(clearEntriesQuery+" Data");
+    		stmt.executeUpdate(clearEntriesQuery+" Data");   		
     		stmt.executeUpdate("ALTER TABLE Data AUTO_INCREMENT = 1");
     		stmt.executeUpdate(clearEntriesQuery+" Patient");
     		stmt.executeUpdate(clearEntriesQuery+" Bed");
@@ -280,5 +280,44 @@ public class Relational_DB implements TestDb{
 			data.addAll(get(String.format(dataQuery,table,table, table, table), Data.class));
 		}		
 		return data;		
+	}
+
+	@Override
+	public boolean addFieldToData(String entry, String field) {
+		String query = "ALTER TABLE " + entry + " ADD " + field + " VARCHAR(30)";
+		try {
+    	    Statement stmt = con.createStatement();
+    		stmt.executeUpdate(query);
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());            
+            return false;
+        }
+		return true;
+	}
+
+	@Override
+	public boolean updateValueForData(String entry, String value) {
+		String query = "UPDATE "+ entry + " SET NewValue = '" + value + "'";
+		try {
+    	    Statement stmt = con.createStatement();
+    		stmt.executeUpdate(query);
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+            return false;
+        }
+		return true;
+	}
+
+	@Override
+	public boolean removeFieldForData(String entry, String field) {
+		String query = "ALTER TABLE " + entry + " DROP " + field;
+		try {
+    	    Statement stmt = con.createStatement();
+    		stmt.executeUpdate(query);
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+            return false;
+        }
+		return true;
 	}
 }

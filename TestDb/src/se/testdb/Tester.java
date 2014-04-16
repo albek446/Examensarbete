@@ -126,6 +126,27 @@ public class Tester {
 		return new SimpleEntry<Double, Boolean>(endTime, valid);
 	}	
 	
+	public SimpleEntry<Double, Boolean> testAddFieldToData(){
+		double startTime = System.currentTimeMillis();
+		boolean valid = currentTest.addFieldToData("Data", "NewValue");
+		double endTime = System.currentTimeMillis() - startTime;
+		return new SimpleEntry<Double, Boolean>(endTime, valid);
+	}
+	
+	public SimpleEntry<Double, Boolean> testUpdateValueForData(){
+		double startTime = System.currentTimeMillis();
+		boolean valid = currentTest.updateValueForData("Data", "newValue");
+		double endTime = System.currentTimeMillis() - startTime;
+		return new SimpleEntry<Double, Boolean>(endTime, valid);
+	}
+
+	public SimpleEntry<Double, Boolean> testRemoveFieldForData(){
+		double startTime = System.currentTimeMillis();
+		boolean valid = currentTest.removeFieldForData("Data", "NewValue");
+		double endTime = System.currentTimeMillis() - startTime;
+		return new SimpleEntry<Double, Boolean>(endTime, valid);
+	}
+	
 	private boolean validate(List<?> resultData, List<?> dummyData, Class c){
 		int foundIdCounter = 0;
 		try {
