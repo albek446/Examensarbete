@@ -37,7 +37,8 @@ public class DummyData {
 		List<Parameter> params = new ArrayList<>();
 		
 		for (int i = 1; i <= nr; i++){
-			String name = parameterNames.get(rand.nextInt(parameterNames.size()));
+			//add i to param name to make parameternames unique
+			String name = parameterNames.get(rand.nextInt(parameterNames.size())) + i;
 			String cat = parameterCats.get(rand.nextInt(parameterCats.size()));
 			String unit = parameterUnits.get(rand.nextInt(parameterUnits.size()));
 			String round = parameterRounds.get(rand.nextInt(parameterRounds.size()));

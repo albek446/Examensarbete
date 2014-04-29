@@ -15,8 +15,18 @@ public class Main {
 	}
 	
 	private static void runTests(Tester tester) {
-		double insertTime = tester.testInsertAll(10);
-		System.out.println("InsertTime: " + insertTime);
+		
+		
+		//Normal case
+		//double insertTime = tester.testInsertAll(4, 32, 14, 52, 161280);
+		
+		//Worst case
+		//double insertTime= tester.testInsertAll(4, 32, 32, 52, 14376960);
+		
+		//Worst case * 10
+		//double insertTime = tester.testInsertAll(40, 320, 320, 52, 143769600);
+		
+		//System.out.println("InsertTime: " + insertTime);
 		
 		HashMap<String, SimpleEntry<Double, Boolean>> results = new HashMap<>();
 		results.put("getParamResult", tester.testGetParameters());
@@ -30,6 +40,7 @@ public class Main {
 		results.put("addFieldToDataResult", tester.testAddFieldToData());
 		results.put("updateValueForDataResult", tester.testUpdateValueForData());
 		results.put("removeFieldForDataResult", tester.testRemoveFieldForData());
+		
 		
 		for(String key : results.keySet()){
 			System.out.println(key + ": Time:" + results.get(key).getKey() + " Valid: " + results.get(key).getValue());

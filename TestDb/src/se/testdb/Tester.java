@@ -16,26 +16,26 @@ public class Tester {
 		dd = new DummyData();
 	}
 	
-	public double testInsertAll(int n){		
+	public double testInsertAll(int modules, int beds, int patients, int parameters, int values){		
 		double startTime = System.currentTimeMillis();
 
-		dd.genDummyModules(n);
+		dd.genDummyModules(modules);
 		for (Module m : dd.modules){
 			currentTest.insert(m);
 		}
-		dd.genDummyBeds(n);
+		dd.genDummyBeds(beds);
 		for (Bed b : dd.beds){
 			currentTest.insert(b);
 		}
-		dd.genPatientDummyData(n);
+		dd.genPatientDummyData(patients);
 		for (Patient p : dd.patients){
 			currentTest.insert(p);
 		}
-		dd.genParameterDummyData(n);	
+		dd.genParameterDummyData(parameters);	
 		for (Parameter p : dd.parameters){
 			currentTest.insert(p);
 		}
-		dd.genDummyData(n);
+		dd.genDummyData(values);
 		for (Data d : dd.data){
 			currentTest.insert(d);
 		}
@@ -54,8 +54,6 @@ public class Tester {
 	}
 	
 	public SimpleEntry<Double, Boolean> testGetPatientData(){
-		//DummyData dd = new DummyData();
-		//Patient patient = dd.getPatientDummyData(1).get(0);
 		double startTime = System.currentTimeMillis();
 		List<Data> d = currentTest.getPatientData(Integer.parseInt(dd.data.get(0).bed));
 		double endTime = System.currentTimeMillis() - startTime;
@@ -153,7 +151,6 @@ public class Tester {
 			Field fieldId = c.getField("id");			
 			for(Object resElem : resultData){
 				for(Object dummyElem : dummyData){
-					//System.out.println(fieldId.get(resElem) + " - " + fieldId.get(dummyElem));
 					if(fieldId.get(resElem).equals(fieldId.get(dummyElem))){						
 						foundIdCounter += 1;
 						for(Field f : c.getFields()){							
