@@ -17,7 +17,7 @@ public class Relational_DB implements TestDb{
 
 	private Connection con = null;
 	
-	private String url = "jdbc:mysql://localhost:3306/Exjobb";
+	private String url = "jdbc:mysql://130.236.188.168:3306/relationdb";
 	private String user = "user";
     private String password = "password";
     private List<String> dataTables;

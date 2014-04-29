@@ -35,7 +35,7 @@ public class MongoDB implements TestDb {
 		//String username = "user";
 		//String password = "password";
 		try {
-			MongoClient mongoClient = new MongoClient("localhost");
+			MongoClient mongoClient = new MongoClient("130.236.188.168");
 			
 			db = mongoClient.getDB("Exjobb");
 			db.dropDatabase();

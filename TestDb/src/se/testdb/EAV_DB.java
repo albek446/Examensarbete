@@ -15,7 +15,7 @@ public class EAV_DB implements TestDb{
 	
 	private Connection con = null;
 	
-	private String url = "jdbc:mysql://localhost:3306/EAV";
+	private String url = "jdbc:mysql://130.236.188.168:3306/eavdb";
 	private String user = "user";
     private String password = "password";
     

@@ -10,8 +10,8 @@ public class Main {
 		runTests(new Tester(new EAV_DB()));		
 		System.out.println("\n#####Relation-tests#####");
 		runTests(new Tester(new Relational_DB()));
-		System.out.println("\n#####MongoDB-tests#####");
-		runTests(new Tester(new MongoDB()));
+		//System.out.println("\n#####MongoDB-tests#####");
+		//runTests(new Tester(new MongoDB()));
 	}
 	
 	private static void runTests(Tester tester) {
