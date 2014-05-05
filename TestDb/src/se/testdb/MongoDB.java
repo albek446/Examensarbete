@@ -35,7 +35,8 @@ public class MongoDB implements TestDb {
 		//String username = "user";
 		//String password = "password";
 		try {
-			MongoClient mongoClient = new MongoClient("130.236.188.168");
+			//MongoClient mongoClient = new MongoClient("130.236.188.168");
+			MongoClient mongoClient = new MongoClient("130.236.188.167");			
 			
 			db = mongoClient.getDB("Exjobb");
 			db.dropDatabase();
@@ -284,6 +285,11 @@ public class MongoDB implements TestDb {
 			    	Patient p = new Patient();		    
 			    	BasicDBObject bedObject = (BasicDBObject)dataObj;
 			    	BasicDBObject patientObject = (BasicDBObject)bedObject.get("patient");
+			    	//if bed is empty
+			    	if(patientObject == null){
+			    		System.out.println("It Is NULL: " + bedObject);
+			    		continue;
+			    	}
 			    	ObjectId bedId = (ObjectId)bedObject.get("_id");
 			    	ObjectId patientId = (ObjectId)patientObject.get("_id");
 			    	p.id = Integer.parseInt(patientIds.get(patientId.toString()));
@@ -377,7 +383,9 @@ public class MongoDB implements TestDb {
 	}
 
 	@Override
-	public boolean updateValueForData(String entry, String value) {		
+	public boolean updateValueForData(String entry, String value) {	
+		return true;
+		/*
 		String queryMatch = "{data : {$exists : true}}";		
 		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);		
 		DBCursor cursor = db.getCollection("parameters").find(match);
@@ -391,7 +399,7 @@ public class MongoDB implements TestDb {
 					String hej = "{'$set' : {'data.$.value' : '" + value + "'}}";
 					BasicDBObject q = (BasicDBObject)JSON.parse(tempQuery);
 					BasicDBObject w = (BasicDBObject)JSON.parse(hej);
-					db.getCollection("parameters").update(q, w);	
+					db.getCollection("parameters").update(q, w);
 				}				
 			}
 		}catch(Exception e){
@@ -400,11 +408,13 @@ public class MongoDB implements TestDb {
 		}finally{
 			cursor.close();
 		}
-		return true;
+		return true;*/
 	}
 
 	@Override
 	public boolean removeFieldForData(String entry, String field) {
+		return true;
+		/*
 		String queryMatch = "{data : {$exists : true}}";		
 		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);		
 		DBCursor cursor = db.getCollection("parameters").find(match);
@@ -427,6 +437,6 @@ public class MongoDB implements TestDb {
 		}finally{
 			cursor.close();
 		}
-		return true;
+		return true;*/
 	}
 }

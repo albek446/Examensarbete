@@ -17,8 +17,8 @@ public class Relational_DB implements TestDb{
 
 	private Connection con = null;
 	
-	private String url = "jdbc:mysql://130.236.188.167:3306/relationdb";
 	//private String url = "jdbc:mysql://130.236.188.168:3306/relationdb";
+	private String url = "jdbc:mysql://130.236.188.167:3306/relationdb";	
 	private String user = "user";
     private String password = "password";
     private List<String> dataTables;
@@ -28,7 +28,7 @@ public class Relational_DB implements TestDb{
     		dataTables = Arrays.asList("Data1", "Data2");
     		DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 			con = DriverManager.getConnection(url, user, password);
-			/*String clearEntriesQuery = "DELETE FROM";
+			String clearEntriesQuery = "DELETE FROM";
     	    Statement stmt = con.createStatement();
     	    for (String table : dataTables){
     	    	stmt.executeUpdate(clearEntriesQuery + " " + table);
@@ -42,7 +42,7 @@ public class Relational_DB implements TestDb{
     		stmt.executeUpdate(clearEntriesQuery+" Module");
     		stmt.executeUpdate("ALTER TABLE Module AUTO_INCREMENT = 1");
     		stmt.executeUpdate(clearEntriesQuery+" Parameter");
-    		stmt.executeUpdate("ALTER TABLE Parameter AUTO_INCREMENT = 1");*/
+    		stmt.executeUpdate("ALTER TABLE Parameter AUTO_INCREMENT = 1");
 			
 		} catch (SQLException e) {
 			System.out.println(e.toString());
@@ -59,9 +59,6 @@ public class Relational_DB implements TestDb{
     			continue;
     		try {   			
     			columnNames += e.getKey() + ", ";
-    			/*if (e.getKey().equals("min")){
-    				argValues += "" + Float.parseFloat(e.getValue()+"") + ", ";
-    			}*/
     			if(e.getValue().equals("LAST_INSERT_ID()"))
     				argValues += "" + e.getValue() + ", ";
     			else

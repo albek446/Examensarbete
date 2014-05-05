@@ -3,7 +3,6 @@ package se.testdb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -80,8 +79,7 @@ public class DummyData {
 	public void genDummyData(int nr) {
 		List<Data> data = new ArrayList<>();
 			
-		for (int i = 1; i< nr; i++){
-			
+		for (int i = 1; i< nr; i++){			
 			long week = 7*1000*60*60*24;
 			Date end = new Date();
 			Date start = new Date(end.getTime() - week);			

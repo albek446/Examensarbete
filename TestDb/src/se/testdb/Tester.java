@@ -2,40 +2,36 @@ package se.testdb;
 
 import java.lang.reflect.Field;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 public class Tester {
 	private TestDb currentTest;
 	private DummyData dd;
 	
-	public Tester(TestDb t) {
+	public Tester(TestDb t, DummyData dd) {
 		currentTest = t;
-		dd = new DummyData();
+		this.dd = dd;
 	}
 	
-	public double testInsertAll(int modules, int beds, int patients, int parameters, int values){		
+	public double testInsertAll(){		
 		double startTime = System.currentTimeMillis();
 
-		dd.genDummyModules(modules);
 		for (Module m : dd.modules){
 			currentTest.insert(m);
-		}
-		dd.genDummyBeds(beds);
+		}		
+		
 		for (Bed b : dd.beds){
 			currentTest.insert(b);
 		}
-		dd.genPatientDummyData(patients);
+		
 		for (Patient p : dd.patients){
 			currentTest.insert(p);
 		}
-		dd.genParameterDummyData(parameters);	
+		
 		for (Parameter p : dd.parameters){
 			currentTest.insert(p);
 		}
-		dd.genDummyData(values);
+		
 		for (Data d : dd.data){
 			currentTest.insert(d);
 		}

@@ -3,20 +3,17 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class EAV_DB implements TestDb{
 	
 	private Connection con = null;
 	
-	private String url = "jdbc:mysql://130.236.188.167:3306/eavdb";
 	//private String url = "jdbc:mysql://130.236.188.168:3306/eavdb";
+	private String url = "jdbc:mysql://130.236.188.167:3306/eavdb";	
 	private String user = "user";
     private String password = "password";
     
@@ -27,14 +24,14 @@ public class EAV_DB implements TestDb{
     	try {    		
     		DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 			con = DriverManager.getConnection(url, user, password);
-			/*String clearEntriesQuery = "DELETE FROM";
+			String clearEntriesQuery = "DELETE FROM";
     	    Statement stmt = con.createStatement();    	    
     		stmt.executeUpdate(clearEntriesQuery+" DataTime");
     		stmt.executeUpdate(clearEntriesQuery+" Data");
     		stmt.executeUpdate(clearEntriesQuery+" Patient");
     		stmt.executeUpdate(clearEntriesQuery+" Module");
     		stmt.executeUpdate(clearEntriesQuery+" Bed");
-    		stmt.executeUpdate(clearEntriesQuery+" Parameter");*/
+    		stmt.executeUpdate(clearEntriesQuery+" Parameter");
     		
 		} catch (SQLException e) {
 			System.out.println(e.toString());
@@ -211,7 +208,7 @@ public class EAV_DB implements TestDb{
 	}
 
 	@Override
-	public boolean addFieldToData(String entry, String field) {		
+	public boolean addFieldToData(String entry, String field) {
 		return true;
 	}
 
