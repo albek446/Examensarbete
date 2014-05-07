@@ -120,6 +120,16 @@ public class Tester {
 		return new SimpleEntry<Double, Boolean>(endTime, valid);
 	}	
 	
+	public SimpleEntry<Double, Boolean> testParameterDataFromTimespan(){
+		double startTime = System.currentTimeMillis();
+		List<Data> data = currentTest.getParameterDataFromTimeSpan(dd.data.get(0).bed, dd.data.get(0).parameterId, Long.MIN_VALUE, Long.MAX_VALUE);
+		double endTime = System.currentTimeMillis() - startTime;
+		boolean valid = validate(data, dd.data, Data.class);		
+		//for (Data d : data)
+		//	d.print();
+		return new SimpleEntry<Double, Boolean>(endTime, valid);
+	}
+	
 	public SimpleEntry<Double, Boolean> testAddFieldToData(){
 		double startTime = System.currentTimeMillis();
 		boolean valid = currentTest.addFieldToData("Data", "NewValue");

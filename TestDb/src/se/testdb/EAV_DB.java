@@ -115,10 +115,11 @@ public class EAV_DB implements TestDb{
 			Object o = c.newInstance();
 			//ResultSetMetaData md = rs.getMetaData();
 			boolean hasData = false;
-			while (rs.next()){
-				hasData = true;
+			while (rs.next()){				
+				//hasData = true;
 				//New object for each new ID in result
 				if((i = (int)rs.getObject(1)) != currId){
+					hasData = true;
 					//list.add(o);
 					o = c.newInstance();
 					currId = i;
@@ -136,9 +137,12 @@ public class EAV_DB implements TestDb{
 						field.set(o, rs.getObject(4));
 					}
 				}
+				if(hasData){
+					hasData = false;
+					list.add(o);
+				}
 			}
-			if(hasData)
-				list.add(o);
+			
 		} catch (SQLException e) {
 			System.out.println(e.toString());
 		} catch (InstantiationException e) {
@@ -159,7 +163,7 @@ public class EAV_DB implements TestDb{
 	
 	@Override
 	public List<Parameter> getParameters(int id) {
-		String where = " WHERE id = ANY (SELECT b.value FROM Data a, Data b WHERE a.attribute = 'bed' AND a.value = " + id + " AND b.id = a.id AND b.attribute = 'parameterId')";		
+		String where = " WHERE id = ANY (SELECT value FROM Data WHERE attribute = 'parameterId' AND id = ANY (SELECT id FROM Data WHERE attribute = 'bed' AND value = " + id + "))";			
 		return get("*", "Parameter", where, Parameter.class);
 	}
 
@@ -207,6 +211,14 @@ public class EAV_DB implements TestDb{
 		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);		
 	}
 
+	@Override
+	public List<Data> getParameterDataFromTimeSpan(String bedId, String parameterId, long startTime, long endTime) {
+		String where = " WHERE DataTime.date >= " + startTime;
+		where += " AND DataTime.date <= " + endTime;
+		where += " AND Data.id = ANY (SELECT id FROM Data WHERE attribute = 'bed' and value = " + bedId + ") AND id = ANY (SELECT id FROM Data WHERE attribute = 'parameterId' and value = " + parameterId + ")";
+		return get("Data.*, DataTime.date", "DataTime LEFT JOIN Data ON DataTime.dataId = Data.id", where, Data.class);	
+	}
+	
 	@Override
 	public boolean addFieldToData(String entry, String field) {
 		return true;

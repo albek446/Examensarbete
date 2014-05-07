@@ -3,7 +3,10 @@ package se.testdb;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.AbstractMap.SimpleEntry;
 
@@ -14,16 +17,17 @@ public class Main {
 	private static int patients;
 	private static int parameters;
 	private static int data;
-	private static int[][] presets = {{4, 32, 14, 52, 161280},
-									  {4, 32, 32, 52, 14376960},
-									  {40, 320, 320, 52, 143769600}};	
+	private static int[][] presets = {{4, 32, 14, 20, 80640},
+									  {4, 32, 32, 30, 921600},
+									  {40, 320, 320, 30, 916000}};	
 		
 	public static void main(String args[]) throws ParseException{		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Enter values: modules, beds, patients, parameters, data (for default values just write 0 for standard, 1 for worst case and 2 for worst case * 10)");
 		String[] values = null;
-		DummyData dd = new DummyData();
-		try {
+		
+			
+		/*try {
 			String input = br.readLine();
 			if(input.length() > 1){
 				values = input.split(", ");
@@ -56,37 +60,73 @@ public class Main {
 		} catch (Exception e) {
 			System.out.println("Invalid input");
 			return;
-		}
+		}*/		
 		
-		System.out.println("#####EAV-tests#####");
-		name = "#####EAV-tests#####";
-		runTests(new Tester(new EAV_DB(), dd));
-		System.out.println("\n#####Relation-tests#####");
-		name = "#####Relation-tests#####";
-		runTests(new Tester(new Relational_DB(), dd));
-		System.out.println("\n#####MongoDB-tests#####");
-		name = "#####MongoDB-tests#####";
-		runTests(new Tester(new MongoDB(), dd));
+		try{
+			DummyData dd = new DummyData();
+			for(int i = 0; i < 3; i++){
+				for(int j = 0; j < 5; j++){
+					modules = presets[i][0];
+					beds = presets[i][1];
+					patients = presets[i][2];
+					parameters = presets[i][3];
+					data = presets[i][4];
+					
+					dd.genDummyModules(modules);
+					dd.genDummyBeds(beds);
+					dd.genPatientDummyData(patients);
+					dd.genParameterDummyData(parameters);
+					dd.genDummyData(data);
+				
+					System.out.println("Test " + i + "-" + j + " #####EAV-tests#####");				 
+					name = "Test " + i + "-" + j + " #####EAV-tests#####";
+					runTests(new Tester(new EAV_DB(), dd));
+					System.out.println("\nTest " + i + "-" + j + " #####Relation-tests#####");
+					name = "Test " + i + "-" + j + " #####Relation-tests#####";
+					runTests(new Tester(new Relational_DB(), dd));
+					System.out.println("\nTest " + i + "-" + j + " #####MongoDB-tests#####");
+					name = "Test " + i + "-" + j + " #####MongoDB-tests#####";
+					runTests(new Tester(new MongoDB(), dd));
+					dd.reset();
+					
+					Runtime rt = Runtime.getRuntime();
+					System.out.println("Free: " + rt.freeMemory());
+					System.out.println("Total: " + rt.totalMemory());
+					System.out.println("Used: " + (rt.totalMemory() - rt.freeMemory()));
+				}
+			}
+		}catch(Exception e){
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			System.out.println(dateFormat.format(date));
+			Runtime rt = Runtime.getRuntime();
+			System.out.println("SOME ERROR OCCURED");
+			System.out.println(e.toString());
+			System.out.println("Free: " + rt.freeMemory());
+			System.out.println("Total: " + rt.totalMemory());
+			System.out.println("Used: " + (rt.totalMemory() - rt.freeMemory()));
+		}
 	}
 	
 	private static void runTests(Tester tester) {
 		
 		double insertTime = tester.testInsertAll();
 		
-		System.out.println("InsertTime: " + insertTime);
+		System.out.println("0. InsertTime: " + insertTime);
 		
 		HashMap<String, SimpleEntry<Double, Boolean>> results = new HashMap<>();
-		results.put("getParamResult", tester.testGetParameters());		
-		results.put("getPatientDataResult", tester.testGetPatientData());
-		results.put("getParamDataResult", tester.testGetParamData());
-		results.put("getPatientsByNameResult", tester.testGetPatientsByName());
-		results.put("getPatientsByModuleResult", tester.testGetPatientsByModule());
-		results.put("getBedsForModuleResult", tester.testGetBedsForModule());
-		results.put("getModulesResult", tester.testGetModules());
-		results.put("getDataFromTimespanResult", tester.testGetDataFromTimespan());
-		results.put("addFieldToDataResult", tester.testAddFieldToData());
-		results.put("updateValueForDataResult", tester.testUpdateValueForData());
-		results.put("removeFieldForDataResult", tester.testRemoveFieldForData());
+		results.put("1. getPatientsByNameResult", tester.testGetPatientsByName());
+		results.put("2. getModulesResult", tester.testGetModules());
+		results.put("3. getBedsForModuleResult", tester.testGetBedsForModule());
+		results.put("4. getPatientsByModuleResult", tester.testGetPatientsByModule());
+		results.put("5. getParamResult", tester.testGetParameters());
+		results.put("6. getParamDataResult", tester.testGetParamData());
+		results.put("7. getParamDataFromTimespanResult", tester.testParameterDataFromTimespan());
+		results.put("8. getPatientDataResult", tester.testGetPatientData());
+		results.put("9. getDataFromTimespanResult", tester.testGetDataFromTimespan());
+		results.put("10. addFieldToDataResult", tester.testAddFieldToData());
+		results.put("11. updateValueForDataResult", tester.testUpdateValueForData());
+		results.put("12. removeFieldForDataResult", tester.testRemoveFieldForData());
 		
 		PrintWriter writer = null;
 		
@@ -96,7 +136,7 @@ public class Main {
 			writer.println("InsertTime: " + insertTime);
 			for(String key : results.keySet()){
 				writer.println(key + ": Time:" + results.get(key).getKey() + " Valid: " + results.get(key).getValue());
-				System.out.println(key + ": Time:" + results.get(key).getKey() + " Valid: " + results.get(key).getValue());
+				//System.out.println(key + ": Time:" + results.get(key).getKey() + " Valid: " + results.get(key).getValue());
 			}
 		} catch (Exception e) {
 			System.out.println("Could not Write to file: " + e.toString());

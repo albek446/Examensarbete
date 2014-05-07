@@ -33,7 +33,7 @@ public class DummyData {
 	}
 	
 	public void genParameterDummyData(int nr){
-		List<Parameter> params = new ArrayList<>();
+		parameters = new ArrayList<>();
 		
 		for (int i = 1; i <= nr; i++){
 			//add i to param name to make parameternames unique
@@ -42,59 +42,62 @@ public class DummyData {
 			String unit = parameterUnits.get(rand.nextInt(parameterUnits.size()));
 			String round = parameterRounds.get(rand.nextInt(parameterRounds.size()));
 			float value = rand.nextFloat() * 1000.0f;
-			params.add(new Parameter(i, cat, name, unit, round, value, value, value, value));
+			parameters.add(new Parameter(i, cat, name, unit, round, value, value, value, value));
 		}
-		parameters = params;
 	}
 	
 	public void genPatientDummyData(int nr){
-		List<Patient> patients = new ArrayList<>();
+		patients = new ArrayList<>();
 		
 		for (int i = 1; i <= nr; i++){
 			String name = patientNames.get(rand.nextInt(patientNames.size()));			
 			patients.add(new Patient(i, i+"", name, "19920306-0000", rand.nextInt(2)));
 		}
-		this.patients = patients;
 	}
 	
 	public void genDummyModules(int nr){
-		List<Module> modules = new ArrayList<>();
+		modules = new ArrayList<>();
 		for (int i = 1; i <= nr; i++){
 			String name = moduleNames.get(rand.nextInt(moduleNames.size()));
 			modules.add(new Module(i, name));
 		}
-		this.modules = modules;
 	}
 	
 	public void genDummyBeds(int nr){
-		List<Bed> beds = new ArrayList<>();
+		beds = new ArrayList<>();
 		for (int i = 1; i <= nr; i++){
 			String name = bedNames.get(rand.nextInt(bedNames.size()));
 			int moduleId = modules.get(rand.nextInt(modules.size())).id;
 			beds.add(new Bed(i, name, moduleId+""));
 		}
-		this.beds = beds;
 	}
 	
 	public void genDummyData(int nr) {
-		List<Data> data = new ArrayList<>();
+		data = new ArrayList<>();
 			
 		for (int i = 1; i< nr; i++){			
 			long week = 7*1000*60*60*24;
 			Date end = new Date();
 			Date start = new Date(end.getTime() - week);			
 			String paramId = parameters.get(rand.nextInt(parameters.size())).id + "";
-			String bedId = beds.get(rand.nextInt(beds.size())).id + "";
-			float value = rand.nextFloat() * 1000.0f;
+			String bedId = patients.get(rand.nextInt(patients.size())).bed + "";
+			float value = rand.nextFloat() * 100.0f + 1;
 			Data d = new Data(i, getRandomDate(start, end), paramId, bedId, value);
 			data.add(d);
 		}
-		this.data = data;
 	}
 	
 	private Date getRandomDate(Date start, Date end) {		
 		long diff = end.getTime() - start.getTime();
 		Date date = new Date(start.getTime() + rand.nextLong() % diff);
 		return date;
+	}
+	
+	public void reset(){
+		modules = null;		
+		beds = null;
+		patients = null;
+		parameters = null;
+		data = null;
 	}
 }

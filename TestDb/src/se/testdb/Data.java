@@ -17,7 +17,7 @@ public class Data {
 		this.id = id;
 		this.date = date.getTime();
 		this.parameterId = paramId;
-		this.bed = bed;
+		this.bed = bed;		
 		this.value = new DecimalFormat(".###").format(value).replace(",", ".");
 	}
 	

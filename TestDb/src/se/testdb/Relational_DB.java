@@ -93,7 +93,7 @@ public class Relational_DB implements TestDb{
     	catch(Exception e) {
 	    	e.printStackTrace();
     	}
-    	String q1 = insertQuery(f1, table, o);    	
+    	String q1 = insertQuery(f1, table, o);
     	String q2 = null;
     	if(f2.size() != 0) {
     		if(f2.size() > 1) {
@@ -278,6 +278,23 @@ public class Relational_DB implements TestDb{
 			data.addAll(get(String.format(dataQuery,table,table, table, table), Data.class));
 		}		
 		return data;		
+	}
+	
+	@Override
+	public List<Data> getParameterDataFromTimeSpan(String bedId, String parameterId, long startTime, long endTime) {
+		String dataQuery = "SELECT Data.*, %s.value FROM Data";
+		dataQuery += " LEFT JOIN %s";
+		dataQuery += " ON Data.id = %s.dataId";
+		dataQuery += " WHERE Data.bed = " + bedId;
+		dataQuery += " AND Data.parameterId = " + parameterId;
+		dataQuery += " AND Data.date >= " + startTime;
+		dataQuery += " AND Data.date <= " + endTime;
+		dataQuery += " AND %s.value IS NOT NULL";
+		List<Data> data = new ArrayList<>();
+		for(String table : dataTables){
+			data.addAll(get(String.format(dataQuery,table,table, table, table), Data.class));
+		}		
+		return data;
 	}
 
 	@Override
