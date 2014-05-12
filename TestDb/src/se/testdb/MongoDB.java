@@ -393,7 +393,7 @@ public class MongoDB implements TestDb {
 		
 		for(DBObject obj : ao.results()){
 		    ObjectId paramId = (ObjectId)obj.get("_id");
-		    BasicDBList data = (BasicDBList)obj.get("data");	    
+		    BasicDBList data = (BasicDBList)obj.get("data");
 		    for (Object dataObj : data){
 		    	BasicDBObject o = (BasicDBObject)dataObj;
 		    	Data d = new Data();

@@ -19,7 +19,7 @@ public class Main {
 	private static int data;
 	private static int[][] presets = {{4, 32, 14, 20, 80640},
 									  {4, 32, 32, 30, 921600},
-									  {40, 320, 320, 30, 916000}};	
+									  {8, 64, 64, 30, 1843200}};
 		
 	public static void main(String args[]) throws ParseException{		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -64,8 +64,8 @@ public class Main {
 		
 		try{
 			DummyData dd = new DummyData();
-			for(int i = 0; i < 3; i++){
-				for(int j = 0; j < 5; j++){
+			for(int i = 0; i < 1; i++){
+				for(int j = 0; j < 1; j++){
 					modules = presets[i][0];
 					beds = presets[i][1];
 					patients = presets[i][2];
@@ -78,12 +78,12 @@ public class Main {
 					dd.genParameterDummyData(parameters);
 					dd.genDummyData(data);
 				
-					System.out.println("Test " + i + "-" + j + " #####EAV-tests#####");				 
+					/*System.out.println("Test " + i + "-" + j + " #####EAV-tests#####");				 
 					name = "Test " + i + "-" + j + " #####EAV-tests#####";
 					runTests(new Tester(new EAV_DB(), dd));
 					System.out.println("\nTest " + i + "-" + j + " #####Relation-tests#####");
 					name = "Test " + i + "-" + j + " #####Relation-tests#####";
-					runTests(new Tester(new Relational_DB(), dd));
+					runTests(new Tester(new Relational_DB(), dd));*/
 					System.out.println("\nTest " + i + "-" + j + " #####MongoDB-tests#####");
 					name = "Test " + i + "-" + j + " #####MongoDB-tests#####";
 					runTests(new Tester(new MongoDB(), dd));
