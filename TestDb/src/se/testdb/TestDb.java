@@ -1,3 +1,13 @@
+/*************************************************************************
+ * Written by: Albin Ekberg and Jacob Holm
+ * Contact Albin: albek446@student.liu.se
+ * Contact Jacob: jacho391@student.liu.se
+ * Last modified: 2014-06-01 
+ * 
+ * A contract that describe what functions shouldbe tested for every
+ * database.
+ *************************************************************************/
+
 package se.testdb;
 
 import java.util.List;

@@ -1,3 +1,12 @@
+/*************************************************************************
+ * Written by: Albin Ekberg and Jacob Holm
+ * Contact Albin: albek446@student.liu.se
+ * Contact Jacob: jacho391@student.liu.se
+ * Last modified: 2014-06-01 
+ * 
+ * Testing a MongoDB database
+ *************************************************************************/
+
 package se.testdb;
 
 import java.net.UnknownHostException;
@@ -26,6 +35,7 @@ public class MongoDB implements TestDb {
 	private HashMap<String,String> parameterIds; 
 	private HashMap<String,String> dataIds; 
 	
+	//Connects and clear database to prepare for new tests
 	public MongoDB() {
 		moduleIds = new HashMap<>();
 		bedIds = new HashMap<>();
@@ -33,20 +43,17 @@ public class MongoDB implements TestDb {
 		parameterIds = new HashMap<>();
 		dataIds = new HashMap<>();
 		
-		//String username = "user";
-		//String password = "password";
 		try {
 			//MongoClient mongoClient = new MongoClient("130.236.188.168");
-			MongoClient mongoClient = new MongoClient("130.236.188.167");			
+			//MongoClient mongoClient = new MongoClient("130.236.188.167");
+			MongoClient mongoClient = new MongoClient("127.0.0.1");	
 			
 			db = mongoClient.getDB("Exjobb");
 			db.dropDatabase();
-			//boolean auth = db.authenicate(username, password);
 			
 			db.createCollection("module", new BasicDBObject());
 			db.createCollection("parameter", new BasicDBObject());
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -86,9 +93,6 @@ public class MongoDB implements TestDb {
 		
 		String findParameter = "{ '_id' : {'$oid' : '"+ parameterIds.get(d.parameterId)+"'}}";
 		String updateParameter = "{'$push' : { 'data' : " + data.toString() +"}}";
-		
-		//System.out.println(findParameter);
-		//System.out.println(updateParameter);
 		
 		BasicDBObject q1 = (BasicDBObject)JSON.parse(findParameter);
 		BasicDBObject q2 = (BasicDBObject)JSON.parse(updateParameter);
@@ -319,13 +323,11 @@ public class MongoDB implements TestDb {
 
 	@Override
 	public boolean addFieldToData(String entry, String field) {
-		return true;
+		return true; //Nothing has to be done here for MongoDB here
 	}
 
 	@Override
 	public boolean updateValueForData(String entry, String value) {	
-		return true;
-		/*
 		String queryMatch = "{data : {$exists : true}}";		
 		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);		
 		DBCursor cursor = db.getCollection("parameters").find(match);
@@ -348,13 +350,11 @@ public class MongoDB implements TestDb {
 		}finally{
 			cursor.close();
 		}
-		return true;*/
+		return true;
 	}
 
 	@Override
 	public boolean removeFieldForData(String entry, String field) {
-		return true;
-		/*
 		String queryMatch = "{data : {$exists : true}}";		
 		BasicDBObject match = (BasicDBObject)JSON.parse(queryMatch);		
 		DBCursor cursor = db.getCollection("parameters").find(match);
@@ -377,9 +377,10 @@ public class MongoDB implements TestDb {
 		}finally{
 			cursor.close();
 		}
-		return true;*/
+		return true;
 	}
 	
+	//Gets data from database
 	private List<Data> getData(String qMatch, String qFilter){
 		String qUnwind = "{$unwind : '$data'}";
 		String qGroup = "{$group: {_id: '$_id', data: {$push : '$data'}}}";

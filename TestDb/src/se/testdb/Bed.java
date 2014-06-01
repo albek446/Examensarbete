@@ -1,3 +1,12 @@
+/*************************************************************************
+ * Written by: Albin Ekberg and Jacob Holm
+ * Contact Albin: albek446@student.liu.se
+ * Contact Jacob: jacho391@student.liu.se
+ * Last modified: 2014-06-01 
+ * 
+ * Represents information about a bed
+ *************************************************************************/
+
 package se.testdb;
 
 public class Bed {

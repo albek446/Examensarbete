@@ -1,4 +1,14 @@
+/*************************************************************************
+ * Written by: Albin Ekberg and Jacob Holm
+ * Contact Albin: albek446@student.liu.se
+ * Contact Jacob: jacho391@student.liu.se
+ * Last modified: 2014-06-01 
+ * 
+ * Testing a MySQL database that is using an EAV-design
+ *************************************************************************/
+
 package se.testdb;
+
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,13 +23,17 @@ public class EAV_DB implements TestDb{
 	private Connection con = null;
 	
 	//private String url = "jdbc:mysql://130.236.188.168:3306/eavdb";
-	private String url = "jdbc:mysql://130.236.188.167:3306/eavdb";	
+	//private String url = "jdbc:mysql://130.236.188.167:3306/eavdb";
+	private String url = "jdbc:mysql://127.0.0.1:3306/eavdb";
+	
 	private String user = "user";
     private String password = "password";
     
+    //Standard queries for insert and select statements
     private String insertQuery = "INSERT INTO %s(id, attribute, value) VALUES(%s,'%s','%s')";
     private String selectQuery = "SELECT %s FROM %s";
 	
+    //Clear database to prepare for new tests
     public EAV_DB() {
     	try {    		
     		DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -38,6 +52,7 @@ public class EAV_DB implements TestDb{
 		}
 	}
     
+    //Insert data into database
     private void insertRow(String table, String id, String attribute, String value){
     	try {
     		String query = String.format(insertQuery, table, id, attribute, value);
@@ -93,6 +108,7 @@ public class EAV_DB implements TestDb{
 		insertRow("Module", module.id+"", "name", module.name);
 	}
 
+	//Gets data from database
 	private List get(String select, String table, String where, Class c){
 		ResultSet rs = null;
 		try {
@@ -105,6 +121,7 @@ public class EAV_DB implements TestDb{
 		return resultSetToArrayList(rs, c);
 	}
 	
+	//Converts the SQL result to an Java Array
 	@SuppressWarnings("rawtypes")
 	private List resultSetToArrayList(ResultSet rs, Class c){		
 		ArrayList list = new ArrayList();	
@@ -112,15 +129,11 @@ public class EAV_DB implements TestDb{
 		int i;
 		Field[] fields = c.getFields();
 		try {			
-			Object o = c.newInstance();
-			//ResultSetMetaData md = rs.getMetaData();
+			Object o = c.newInstance();			
 			boolean hasData = false;
 			while (rs.next()){				
-				//hasData = true;
-				//New object for each new ID in result
 				if((i = (int)rs.getObject(1)) != currId){
-					hasData = true;
-					//list.add(o);
+					hasData = true;					
 					o = c.newInstance();
 					currId = i;
 					Field field = c.getField("id");
@@ -146,16 +159,12 @@ public class EAV_DB implements TestDb{
 		} catch (SQLException e) {
 			System.out.println(e.toString());
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return list;
@@ -221,7 +230,7 @@ public class EAV_DB implements TestDb{
 	
 	@Override
 	public boolean addFieldToData(String entry, String field) {
-		return true;
+		return true; //Nothing has to be done here for EAV
 	}
 
 	@Override

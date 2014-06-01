@@ -1,3 +1,12 @@
+/*************************************************************************
+ * Written by: Albin Ekberg and Jacob Holm
+ * Contact Albin: albek446@student.liu.se
+ * Contact Jacob: jacho391@student.liu.se
+ * Last modified: 2014-06-01 
+ * 
+ * Generates dummydata to be used while testing databases
+ *************************************************************************/
+
 package se.testdb;
 
 import java.util.ArrayList;
@@ -22,6 +31,7 @@ public class DummyData {
 	public List<Module> modules;
 	public List<Data> data;
 	
+	//Prepare values for all the data
 	public DummyData() {
 		parameterNames = Arrays.asList("pH", "pco2", "po2", "be", "sp02", "mode", "fi02", "pep", "ekg", "cvp", "tidavolym", "expirationsminut volym", "simdax", "temperatur", "dränväxteodling", "tinam", "adrenalin");
 		parameterCats = Arrays.asList("Vital Parameter", "Inställning", "avläsning", "pump", "labb", "odling", "antibiotika", "övrigt");
@@ -34,7 +44,6 @@ public class DummyData {
 	
 	public void genParameterDummyData(int nr){
 		parameters = new ArrayList<>();
-		
 		for (int i = 1; i <= nr; i++){
 			//add i to param name to make parameternames unique
 			String name = parameterNames.get(rand.nextInt(parameterNames.size())) + i;
@@ -47,8 +56,7 @@ public class DummyData {
 	}
 	
 	public void genPatientDummyData(int nr){
-		patients = new ArrayList<>();
-		
+		patients = new ArrayList<>();		
 		for (int i = 1; i <= nr; i++){
 			String name = patientNames.get(rand.nextInt(patientNames.size()));			
 			patients.add(new Patient(i, i+"", name, "19920306-0000", rand.nextInt(2)));
@@ -76,7 +84,7 @@ public class DummyData {
 		data = new ArrayList<>();
 			
 		for (int i = 1; i< nr; i++){			
-			long week = 7*1000*60*60*24;
+			long week = 7*1000*60*60*24; //one week in milliseconds
 			Date end = new Date();
 			Date start = new Date(end.getTime() - week);			
 			String paramId = parameters.get(rand.nextInt(parameters.size())).id + "";
@@ -93,6 +101,7 @@ public class DummyData {
 		return date;
 	}
 	
+	//clears all data
 	public void reset(){
 		modules = null;		
 		beds = null;

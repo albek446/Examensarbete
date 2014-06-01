@@ -1,3 +1,12 @@
+/*************************************************************************
+ * Written by: Albin Ekberg and Jacob Holm
+ * Contact Albin: albek446@student.liu.se
+ * Contact Jacob: jacho391@student.liu.se
+ * Last modified: 2014-06-01 
+ * 
+ * Testing a MySQL database that is using a relational design
+ *************************************************************************/
+
 package se.testdb;
 
 import java.lang.reflect.Field;
@@ -18,11 +27,16 @@ public class Relational_DB implements TestDb{
 	private Connection con = null;
 	
 	//private String url = "jdbc:mysql://130.236.188.168:3306/relationdb";
-	private String url = "jdbc:mysql://130.236.188.167:3306/relationdb";	
+	//private String url = "jdbc:mysql://130.236.188.167:3306/relationdb";
+	private String url = "jdbc:mysql://127.0.0.1:3306/relationdb";
+	
 	private String user = "user";
     private String password = "password";
+    
+    //A list containing names for the different data tables
     private List<String> dataTables;
     
+    //Clear database to prepare for new tests
     public Relational_DB(){
     	try {
     		dataTables = Arrays.asList("Data1", "Data2");
@@ -49,6 +63,7 @@ public class Relational_DB implements TestDb{
 		}
 	}
     
+    //Creates query for inserting data
     private String insertQuery(HashMap<String,Object> fields, String table, Object o){
     	if (fields.size() == 0)
     		return null;
@@ -73,6 +88,7 @@ public class Relational_DB implements TestDb{
     	return "INSERT INTO "+table+"("+columnNames+") VALUES ("+argValues+")";
     }
     
+    //Insert data into database
     private void insertRow(String table, Object o)
     {    	
     	Field[] fields = o.getClass().getDeclaredFields();
@@ -140,6 +156,7 @@ public class Relational_DB implements TestDb{
 		insertRow("Module", module);
 	}
 	
+	//Gets data from database
 	private List get(String query , Class c){
 		ResultSet rs = null;
 		try {
@@ -152,6 +169,7 @@ public class Relational_DB implements TestDb{
 		return resultSetToArrayList(rs, c);
 	}
 	
+	//Converts the SQL result to an Java Array
 	@SuppressWarnings("rawtypes")
 	private List resultSetToArrayList(ResultSet rs, Class c){
 		ResultSetMetaData md;
@@ -161,9 +179,7 @@ public class Relational_DB implements TestDb{
 		try {			
 			md = rs.getMetaData();		
 			while (rs.next()){
-				Object o = c.newInstance();
-				//Boolean foundAttr = false;	
-								
+				Object o = c.newInstance();								
 				for(int i=1;i<=md.getColumnCount();i++) {
 					String col = md.getColumnName(i);
 					Object val = rs.getObject(i);
@@ -175,22 +191,8 @@ public class Relational_DB implements TestDb{
 								val = val+"";							
 							field.set(o, val);
 							break;
-						}
-						/*if(field.getName().equals(col)) {
-							if(col.equals("patientId") || col.equals("parameterId")) {
-								val = ""+val;
-							}
-							field.set(o, val);
-							foundAttr = true;
-							break;
-						}*/
+						}						
 					}
-
-					/*if(!foundAttr) {
-						if(c == Data.class) {
-							((Data)o).addProperties(col, val);
-						}
-					}*/	
 				}
 				list.add(o);
 			}
