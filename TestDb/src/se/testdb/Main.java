@@ -73,8 +73,7 @@ public class Main {
 			dd.reset();
 			
 		} catch (Exception e) {
-			System.out.println("Invalid input");
-			e.printStackTrace();
+			System.out.println("Invalid input");			
 			return;
 		}
 	}
